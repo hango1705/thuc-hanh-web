@@ -34,33 +34,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-document.addEventListener("DOMContentLoaded", function () {
-  const uploadButton = document.getElementById("uploadButton");
-  const fileInput = document.getElementById("fileInput");
+document.getElementById("uploadButton").addEventListener("click", function () {
+  var fileInput = document.getElementById("videoInput");
+  var file = fileInput.files[0];
+  var formData = new FormData();
+  formData.append("my_video", file);
 
-  uploadButton.addEventListener("click", function () {
-    fileInput.click();
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "upload.php", true);
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      alert("File đã được tải lên thành công!!!");
+      location.reload();
+    } else {
+      alert("Đã xảy ra lỗi khi tải lên file.");
+    }
+  };
+
+  xhr.send(formData);
+});
+
+document.querySelectorAll(".video__container__right video").forEach((video) => {
+  video.addEventListener("click", function () {
+    var videoSrc = this.getAttribute("src");
+    var bgVideoElement = document.querySelector(
+      ".bg__video .bg__video__element"
+    );
+    bgVideoElement.src = videoSrc;
+    bgVideoElement.play();
   });
-
-  fileInput.addEventListener("change", function () {
-    const selectedFile = fileInput.files[0];
-    uploadVideo(selectedFile);
-  });
-
-  function uploadVideo(videoFile) {
-    const formData = new FormData();
-    formData.append("videoFile", videoFile);
-
-    fetch("upload.php", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.text())
-      .then((result) => {
-        alert(result); // Hiển thị thông báo từ kết quả của upload.php
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
 });
